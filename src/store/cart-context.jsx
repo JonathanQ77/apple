@@ -53,7 +53,7 @@ function cartReducer(state, action) {
       return {
         ...state, // recupere les valeurs de state qui contient notre objet avec les 4 valeurs
         items: [...state.items, { ...action.payload, quantity: 1 }], // On ajoute a items la valeur actuel dans state le tableau items
-        // et on ajoute les 4 props presentes dans payload et la quantite a 1
+        // et on ajoute les 4 props presentes dans payload et la quantite de defaut a 1
       };
 
     case "UPDATE_QUANTITY":
@@ -79,7 +79,15 @@ function cartReducer(state, action) {
 
       return state; // si nous changons la quantite dun produit non present sur le panier on return le state par securite
     case "DELETE_ITEM":
-    //  A FAIRE
+      const itemIndex3 = state.items.findIndex(
+        (itemInItem) => itemInItem.productName === action.payload.productName
+      );
+      if (itemIndex3 !== -1) {
+        const newItems = [...state.items];
+        newItems.splice(itemIndex3, 1);
+        return { ...state, items: newItems };
+      }
+      return state;
   }
 }
 export default function CartProvider({ children }) {
@@ -94,6 +102,9 @@ export default function CartProvider({ children }) {
     },
     updateQuantity: (productName, quantity) => {
       dispatch({ type: "UPDATE_QUANTITY", payload: { productName, quantity } }); // stock dans le payload product name et quantity
+    },
+    deleteItem: (productName) => {
+      dispatch({ type: "DELETE_ITEM", payload: { productName } });
     },
   };
   return (
